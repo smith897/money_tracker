@@ -9,9 +9,9 @@ import 'database.dart';
 
 class ChildViewHolder extends StatefulWidget {
   static const String route = "/childview";
-  ChildViewHolderArguments args;
+  final ChildViewHolderArguments args;
 
-  ChildViewHolder(this.args, {Key? key}) : super(key: key);
+  const ChildViewHolder(this.args, {Key? key}) : super(key: key);
 
   @override
   State createState() => ChildView();
@@ -117,7 +117,12 @@ class ChildView extends State<ChildViewHolder> {
 
   onOptionsSelected(context, item) async {
     final _picker = ImagePicker();
-    final lost = (await _picker.retrieveLostData()).file;
+    final XFile? lost;
+    if (Platform.isAndroid) {
+      lost = (await _picker.retrieveLostData()).file;
+    } else {
+      lost = null;
+    }
 
     if (item == 0 || item == 1) {
       String? path;
@@ -195,8 +200,8 @@ class ChildView extends State<ChildViewHolder> {
   }
 
   updateChildImage(Child child) {
-    imageCache?.clear();
-    imageCache?.clearLiveImages();
+    imageCache.clear();
+    imageCache.clearLiveImages();
     setState(() {
       widget.args.child = child;
     });
@@ -214,7 +219,6 @@ class ChildView extends State<ChildViewHolder> {
     deductTextField =
         getTextField(false, deductAmount, "Amount", deductOnChanged);
 
-    home:
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.args.child.name),

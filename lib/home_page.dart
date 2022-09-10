@@ -30,8 +30,8 @@ class HomePage extends State<HomePageHolder> {
   }
 
   reloadChildren() {
-    imageCache?.clear();
-    imageCache?.clearLiveImages();
+    imageCache.clear();
+    imageCache.clearLiveImages();
     setState(() {
       children = DBDao().getChildren();
     });
@@ -48,40 +48,38 @@ class HomePage extends State<HomePageHolder> {
               content: TextField(
                 controller: addChildText,
               ),
+              actionsAlignment: MainAxisAlignment.center,
               actions: [
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton(
-                        style: smallEnabledButtonStyle,
-                        onPressed: () => onTakePhotoPressed(),
-                        child: Text(
-                          'Take Photo',
-                          style: smallTextStyle,
-                        ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      style: smallEnabledButtonStyle,
+                      onPressed: () => onTakePhotoPressed(),
+                      child: Text(
+                        'Take Photo',
+                        style: smallTextStyle,
                       ),
-                      ElevatedButton(
-                        style: smallEnabledButtonStyle,
-                        onPressed: () => onChoosePhotoPressed(),
-                        child: Text(
-                          'Choose Photo',
-                          style: smallTextStyle,
-                        ),
+                    ),
+                    ElevatedButton(
+                      style: smallEnabledButtonStyle,
+                      onPressed: () => onChoosePhotoPressed(),
+                      child: Text(
+                        'Choose Photo',
+                        style: smallTextStyle,
                       ),
-                    ]),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton(
-                        style: enabledButtonStyle,
-                        onPressed: () => onAddChildConfirmed(
-                            addChildText.text, addChildImagePath),
-                        child: Text(
-                          'Add Child',
-                          style: smallTextStyle,
-                        ),
+                    ),
+                    ElevatedButton(
+                      style: enabledButtonStyle,
+                      onPressed: () => onAddChildConfirmed(
+                          addChildText.text, addChildImagePath),
+                      child: Text(
+                        'Add Child',
+                        style: smallTextStyle,
                       ),
-                    ])
+                    )
+                  ],
+                ),
               ],
             ),
         barrierDismissible: true);
@@ -106,42 +104,66 @@ class HomePage extends State<HomePageHolder> {
   }
 
   onTakePhotoPressed() async {
-    final _picker = ImagePicker();
-    final lost = (await _picker.retrieveLostData()).file;
-
-    String? currPath;
-    if (lost != null) {
-      currPath = lost.path;
-    } else {
-      XFile? photo;
-      photo = await _picker.pickImage(source: ImageSource.camera);
-      if (photo != null) {
-        currPath = photo.path;
+    try {
+      final _picker = ImagePicker();
+      final XFile? lost;
+      if (Platform.isAndroid) {
+        lost = (await _picker.retrieveLostData()).file;
+      } else {
+        lost = null;
       }
-    }
-    if (currPath != null) {
-      addChildImagePath = currPath;
-      showSnackbar("Photo added", context);
+
+      String? currPath;
+      if (lost != null) {
+        currPath = lost.path;
+      } else {
+        XFile? photo;
+        photo = await _picker.pickImage(source: ImageSource.camera);
+        if (photo != null) {
+          currPath = photo.path;
+        }
+      }
+      if (currPath != null) {
+        addChildImagePath = currPath;
+        showSnackbar("Photo added", context);
+      }
+    } catch (e, st) {
+      showSnackbar(
+          "Unable to take photo. You may need to enable camera permission in system settings",
+          context);
+      log("Unable to get picture: $e, $st");
     }
   }
 
   onChoosePhotoPressed() async {
-    final _picker = ImagePicker();
-    final lost = (await _picker.retrieveLostData()).file;
-
-    String? currPath;
-    if (lost != null) {
-      currPath = lost.path;
-    } else {
-      XFile? photo;
-      photo = await _picker.pickImage(source: ImageSource.gallery);
-      if (photo != null) {
-        currPath = photo.path;
+    try {
+      final _picker = ImagePicker();
+      final XFile? lost;
+      if (Platform.isAndroid) {
+        lost = (await _picker.retrieveLostData()).file;
+      } else {
+        lost = null;
       }
-    }
-    if (currPath != null) {
-      addChildImagePath = currPath;
-      showSnackbar("Photo added", context);
+
+      String? currPath;
+      if (lost != null) {
+        currPath = lost.path;
+      } else {
+        XFile? photo;
+        photo = await _picker.pickImage(source: ImageSource.gallery);
+        if (photo != null) {
+          currPath = photo.path;
+        }
+      }
+      if (currPath != null) {
+        addChildImagePath = currPath;
+        showSnackbar("Photo added", context);
+      }
+    } catch (e, st) {
+      showSnackbar(
+          "Unable to choose photo. You may need to enable camera permission in system settings",
+          context);
+      log("Unable to get picture: $e, $st");
     }
   }
 

@@ -43,5 +43,10 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<!-- Image picker -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Choose a photo for your child</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Take a new photo</string>
 </dict>
 </plist>
