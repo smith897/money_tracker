@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -109,10 +110,15 @@ class ChildView extends State<ChildViewHolder> {
   }
 
   onChildDeleted(int id) async {
-    await DBDao().deleteChild(id);
-    widget.args.reloadChildren();
-    showSnackbar("Child deleted", context);
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    try {
+      await DBDao().deleteChild(id);
+      widget.args.reloadChildren();
+      showSnackbar("Child deleted", context);
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    } catch (e, st) {
+      showSnackbar("Unable to delete child", context);
+      log("An error occurred deleting a child: $e, $st");
+    }
   }
 
   onOptionsSelected(context, item) async {
